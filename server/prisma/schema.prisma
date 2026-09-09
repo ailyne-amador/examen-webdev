@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  rut       String   @unique
+  nombre    String
+  apellido  String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("usuarios")
+}
+
+model Producto {
+  id               Int      @id @default(autoincrement())
+  sku              String   @unique
+  nombre           String
+  descripcionCorta String
+  descripcionLarga String
+  imagenUrl        String
+  precioNeto       Decimal  @db.Decimal(10, 2)
+  precioVenta      Decimal  @db.Decimal(10, 2)
+  stockActual      Int
+  stockMinimo      Int
+  stockBajo        Int
+  stockAlto        Int
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("productos")
+}
+
+model Cliente {
+  id             Int      @id @default(autoincrement())
+  rutEmpresa     String   @unique
+  rubro          String
+  razonSocial    String
+  telefono       String
+  direccion      String
+  nombreContacto String
+  emailContacto  String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("clientes")
+}
