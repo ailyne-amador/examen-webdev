@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import webRoutes from './routes/web.routes';
 
 const app = express();
 
@@ -19,5 +20,7 @@ app.use(cookieParser());
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
+
+app.use('/', webRoutes);
 
 export default app;

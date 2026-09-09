@@ -27,6 +27,8 @@
     // "noUnusedParameters": true,
     // "noFallthroughCasesInSwitch": true,
     // "noPropertyAccessFromIndexSignature": true,
+    /* Advanced Options */
+    "resolveJsonModule": true,
     // Recommended Options
     "strict": true,
     "jsx": "react-jsx",
