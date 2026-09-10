@@ -3,6 +3,7 @@ import { login } from "../controllers/auth.controller";
 import * as usuarioController from "../controllers/usuario.controller";
 import * as productoController from "../controllers/producto.controller";
 import * as clienteController from "../controllers/cliente.controller";
+import * as dashboardController from "../controllers/dashboard.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { upload } from "../middlewares/upload.middleware";
 
@@ -10,6 +11,9 @@ const router = Router();
 
 // Auth
 router.post("/login", login);
+ 
+// Dashboard
+router.get("/dashboard", authMiddleware, dashboardController.obtener);
 
 // Usuarios
 router.get("/usuarios", authMiddleware, usuarioController.listar);

@@ -35,10 +35,13 @@ server/
 │   │   └── prisma.ts          # instancia única de PrismaClient con adapter pg
 │   ├── controllers/
 │   │   ├── auth.controller.ts
-│   │   └── usuario.controller.ts
-│   │   └── producto.controller.ts
+│   │   ├── usuario.controller.ts
+│   │   ├── producto.controller.ts
+│   │   ├── cliente.controller.ts
+│   │   └── dashboard.controller.ts
 │   ├── middlewares/
-│   │   └── auth.middleware.ts
+│   │   ├── auth.middleware.ts
+│   │   └── upload.middleware.ts
 │   ├── routes/
 │   │   └── web.routes.ts      # aún no separado de external.routes.ts (ver Fase 10 pendiente)
 │   ├── schemas/                # validaciones Zod
@@ -48,7 +51,8 @@ server/
 │   ├── services/
 │   │   ├── usuario.service.ts
 │   │   ├── producto.service.ts
-│   │   └── cliente.service.ts
+│   │   ├── cliente.service.ts
+│   │   └── dashboard.service.ts
 │   ├── utils/
 │   │   └── hash.ts
 │   ├── app.ts
@@ -56,6 +60,7 @@ server/
 ├── uploads/                    # imágenes de productos, servidas como estáticas en /uploads
 └── .env
 ```
+
 
 ## Patrón de arquitectura (aplicar igual para cualquier entidad nueva)
 
@@ -97,7 +102,7 @@ Pendiente agregar en Fase 10: credenciales de servicio para Softland (`client_id
 
 ## Qué falta (fases pendientes, en orden)
 
-- **Fase 9** — Endpoint `GET /dashboard` con los 3 conteos (`usuario.count()`, `producto.count()`, `cliente.count()`).
+- ✅ **Fase 9** — Endpoint protegido `GET /dashboard` con los conteos de usuarios, productos y clientes, calculados en paralelo.
 - **Fase 10** — Separar rutas de backoffice (`/usuarios`, `/productos`, ...) de rutas para Softland (`/api/v1/...`), reutilizando los mismos controllers/services. Crear `POST /api/v1/auth/token` para que Softland obtenga su JWT vía `client_id`/`client_secret`. Documentar en README.
 - **Fase 11** — Setup de `client/` con Vite + Tailwind + axios + react-router-dom.
 - **Fase 12** — Auth en frontend: `AuthContext`, página de login, `ProtectedRoute`, router con las rutas del sistema.
