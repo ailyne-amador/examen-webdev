@@ -20,7 +20,7 @@ Idea central de la arquitectura: **backoffice y Softland comparten los mismos co
 - cookie-parser, cors, multer, dotenv
 - Ejecución en desarrollo: `tsx watch`
 
-**Frontend** (`client/`): Vite + React. Tailwind CSS v4, axios y react-router-dom. La autenticación, el router, el login y el shell protegido del backoffice ya están implementados; las pantallas CRUD quedan para la Fase 13.
+**Frontend** (`client/`): Vite + React. Tailwind CSS v4, axios y react-router-dom. La autenticación, el router, el login, el shell protegido y las pantallas CRUD de Clientes y Productos están implementados; quedan pendientes Usuarios y Dashboard.
 
 ## Estructura de carpetas
 
@@ -34,7 +34,10 @@ client/
 │   ├── lib/
 │   │   └── api.js              # instancia compartida de Axios
 │   ├── pages/
-│   │   └── LoginPage.jsx       # acceso inicial al backoffice
+│   │   ├── LoginPage.jsx       # acceso inicial al backoffice
+│   │   ├── ProfilePage.jsx     # consulta de datos y edición de correo/contraseña
+│   │   ├── ClientesPage.jsx    # listado, alta, edición y eliminación de clientes
+│   │   └── ProductosPage.jsx   # tarjetas, alta, edición, imagen y eliminación de productos
 │   ├── App.jsx                 # router y shell protegido
 │   ├── index.css               # Tailwind, tokens y estilos visuales
 │   └── main.jsx
@@ -130,11 +133,12 @@ VITE_API_URL="http://localhost:4000"
   Decisión de diseño relevante para Productos: `stockBajo`/`stockAlto`/`stockMinimo` son umbrales **configurables por producto** (ya existen como columnas en el modelo, no requirió migración). `estadoStock` ("bajo"/"normal"/"alto") es un **campo derivado calculado en el service** (`calcularEstadoStock`), nunca almacenado en la BD, para evitar que quede desincronizado del `stockActual` real.
 - ✅ **Fase 10** — Rutas de backoffice y API externa separadas. Los endpoints `/api/v1/...` reutilizan los mismos controllers/services, y `POST /api/v1/auth/token` entrega JWT a Softland usando `client_id`/`client_secret`.
 - ✅ **Fase 11** — Frontend inicializado en `client/` con Vite + React. Tailwind CSS v4 quedó integrado mediante `@tailwindcss/vite`, y se instalaron axios y react-router-dom. `src/lib/api.js` centraliza el cliente Axios con `VITE_API_URL`, fallback a `http://localhost:4000` y `withCredentials: true`. `npm run build` pasa.
-- ✅ **Fase 12** — Autenticación del frontend completada: `AuthContext` con login/logout y persistencia de usuario por pestaña, `LoginPage` responsive, `ProtectedRoute`, router con `/dashboard`, `/usuarios`, `/productos` y `/clientes`, y shell autenticado con navegación y cierre de sesión. El login es la página inicial. Se aplicó un diseño minimalista y profesional definido en `frontend-design.md`; login desktop y móvil verificados, `npm run build` pasa.
+- ✅ **Fase 12** — Autenticación del frontend completada: `AuthContext` con login/logout y persistencia de usuario por pestaña, `LoginPage` responsive, `ProtectedRoute`, router con `/dashboard`, `/usuarios`, `/productos`, `/clientes` y `/perfil`, shell autenticado con navegación y cierre de sesión, y `ProfilePage` con datos no editables y un componente `ProfileEditForm` reutilizable para actualizar únicamente el correo o la contraseña. El login es la página inicial. Se aplicó un diseño minimalista y profesional definido en `frontend-design.md`; login verificado en desktop y móvil, perfil verificado en desktop, `npm run build` pasa.
+- ✅ **Fase 13 (Productos)** — CRUD de Productos en el backoffice con `ProductosPage.jsx`: listado responsive en tarjetas, imagen, SKU, precios, stock actual/mínimo, umbrales `stockBajo`/`stockAlto` y bandera derivada de `estadoStock`. Incluye rutas `/productos`, `/productos/nuevo` y `/productos/:id`, formulario `multipart/form-data` para crear/editar, reemplazo opcional de imagen y eliminación con advertencia. Componentes internos reutilizables `ProductCard`, `ProductInput` y `StockBadge`. `npm run build` pasa y el flujo visual de listado, creación y edición fue verificado.
 
 ## Qué falta (fases pendientes, en orden)
 
-- **Fase 13** — Pantallas CRUD (Usuarios como referencia, luego Productos con input de imagen, luego Clientes) + Dashboard.
+- **Fase 13 pendiente** — Pantallas CRUD de Usuarios y Dashboard; Productos y Clientes ya están implementados en el frontend.
 - **Fase 14** — Colección de Postman completa contra `/api/v1/...` (token + 5 operaciones × 3 entidades), verificando 401 sin token.
 - **Fase 15** — Checklist final de la pauta (login, validaciones backend, password hasheada, rechazo sin token, 3 CRUD funcionando desde ambos lados, dashboard, `precioVenta` con IVA).
 - **Fase 16** — Grabación de los 2 videos y entrega del zip.

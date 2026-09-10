@@ -29,6 +29,19 @@ export function AuthProvider({ children }) {
       setLoading(false)
     }
   }
+  async function updateUser(id, changes) {
+    setLoading(true)
+    try {
+      const { data } = await api.put(`/usuarios/${id}`, changes)
+      setUser(data)
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+      return data
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'No pudimos guardar tus datos')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   async function logout() {
     try {
@@ -41,7 +54,7 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const value = useMemo(() => ({ user, loading, login, logout }), [user, loading])
+  const value = useMemo(() => ({ user, loading, login, updateUser, logout }), [user, loading])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
