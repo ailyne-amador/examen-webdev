@@ -4,7 +4,7 @@ Este documento describe el estado actual del proyecto para que cualquier agente 
 
 ## Qué es este proyecto
 
-VentasFix es un proyecto universitario: un **backoffice** (React) + **API** (Express/TypeScript) para gestionar Usuarios, Productos y Clientes de una empresa. La API también debe poder ser consumida externamente por un sistema llamado **Softland**, autenticándose de forma distinta al login humano (token de servicio vía `client_id`/`client_secret`, aún no implementado — ver "Qué falta").
+VentasFix es un proyecto universitario: un **backoffice** (React) + **API** (Express/TypeScript) para gestionar Usuarios, Productos y Clientes de una empresa. La API también puede ser consumida externamente por un sistema llamado **Softland**, autenticándose de forma distinta al login humano (token de servicio vía `client_id`/`client_secret`).
 
 Idea central de la arquitectura: **backoffice y Softland comparten los mismos controllers/services**. Lo único que cambia entre ambos es cómo se autentica cada uno — el middleware de auth acepta el token tanto por cookie (backoffice) como por header `Authorization: Bearer` (Softland/API externa).
 
@@ -20,11 +20,22 @@ Idea central de la arquitectura: **backoffice y Softland comparten los mismos co
 - cookie-parser, cors, multer, dotenv
 - Ejecución en desarrollo: `tsx watch`
 
-**Frontend** (`client/`): aún no iniciado (Fase 11 en adelante). Cuando se construya: React + Vite + Tailwind + axios + react-router-dom + react-hook-form.
+**Frontend** (`client/`): Vite + React configurado. Tailwind CSS v4, axios y react-router-dom ya están instalados; la implementación de autenticación y pantallas queda para las fases siguientes.
 
-## Estructura de carpetas (backend)
+## Estructura de carpetas
 
-```
+```text
+client/
+├── src/
+│   ├── lib/
+│   │   └── api.js             # instancia compartida de Axios
+│   ├── App.jsx                # shell inicial del backoffice
+│   ├── index.css              # Tailwind y estilos base
+│   └── main.jsx
+├── index.html
+├── package.json
+└── vite.config.js             # React + Tailwind
+
 server/
 ├── prisma/
 │   ├── schema.prisma
@@ -43,7 +54,8 @@ server/
 │   │   ├── auth.middleware.ts
 │   │   └── upload.middleware.ts
 │   ├── routes/
-│   │   └── web.routes.ts      # aún no separado de external.routes.ts (ver Fase 10 pendiente)
+│   │   ├── web.routes.ts      # rutas del backoffice
+│   │   └── external.routes.ts # rutas de la API externa bajo /api/v1
 │   ├── schemas/                # validaciones Zod
 │   │   ├── usuario.schema.ts
 │   │   ├── producto.schema.ts
@@ -73,14 +85,23 @@ Cada entidad sigue 4 capas, cada una con una sola responsabilidad:
 
 Convenciones HTTP ya establecidas: `201` en creación, `204` sin body en eliminación, `400` en ID inválido (`isNaN`) o validación fallida, `401` sin token / token inválido, `403` reservado para "autenticado pero sin permiso" (no usado aún), `404` en recurso no encontrado.
 
-## Variables de entorno (`server/.env`)
+## Variables de entorno
 
-```
+Backend (`server/.env`):
+
+```env
 DATABASE_URL="postgresql://ventasfix:ventasfix_pass@localhost:5432/ventasfix_db"
 JWT_SECRET="..."
 PORT=4000
 SOFTLAND_CLIENT_ID="..."
 SOFTLAND_CLIENT_SECRET="..."
+```
+
+Frontend (`client/.env`, opcional):
+
+```env
+VITE_API_URL="http://localhost:4000"
+```
 
 ## Estado actual por fase
 
@@ -102,10 +123,10 @@ SOFTLAND_CLIENT_SECRET="..."
 
   Decisión de diseño relevante para Productos: `stockBajo`/`stockAlto`/`stockMinimo` son umbrales **configurables por producto** (ya existen como columnas en el modelo, no requirió migración). `estadoStock` ("bajo"/"normal"/"alto") es un **campo derivado calculado en el service** (`calcularEstadoStock`), nunca almacenado en la BD, para evitar que quede desincronizado del `stockActual` real.
 - ✅ **Fase 10** — Rutas de backoffice y API externa separadas. Los endpoints `/api/v1/...` reutilizan los mismos controllers/services, y `POST /api/v1/auth/token` entrega JWT a Softland usando `client_id`/`client_secret`.
+- ✅ **Fase 11** — Frontend inicializado en `client/` con Vite + React. Tailwind CSS v4 quedó integrado mediante `@tailwindcss/vite`, y se instalaron axios y react-router-dom. `src/lib/api.js` centraliza el cliente Axios con `VITE_API_URL`, fallback a `http://localhost:4000` y `withCredentials: true`. El starter de Vite fue reemplazado por un shell mínimo de VentasFix y `npm run build` pasa.
 
 ## Qué falta (fases pendientes, en orden)
 
-- **Fase 11** — Setup de `client/` con Vite + Tailwind + axios + react-router-dom.
 - **Fase 12** — Auth en frontend: `AuthContext`, página de login, `ProtectedRoute`, router con las rutas del sistema.
 - **Fase 13** — Pantallas CRUD (Usuarios como referencia, luego Productos con input de imagen, luego Clientes) + Dashboard.
 - **Fase 14** — Colección de Postman completa contra `/api/v1/...` (token + 5 operaciones × 3 entidades), verificando 401 sin token.
@@ -117,17 +138,27 @@ SOFTLAND_CLIENT_SECRET="..."
 Estas son diferencias entre lo que sugiere la guía base del proyecto y lo que realmente se implementó — importante para no "corregir" algo que en realidad fue una decisión consciente:
 
 1. **Prisma con driver adapters, no el motor por defecto.** La guía original asumía `provider = "prisma-client-js"` simple. El proyecto real usa un generator con `output` custom (cliente generado en `generated/prisma/client`, no en `node_modules/@prisma/client`) más `@prisma/adapter-pg` y un `pg.Pool` explícito en `config/prisma.ts`. Al importar `PrismaClient` en código nuevo, usar la ruta relativa correcta hacia `generated/prisma/client` (verificar cuántos niveles según desde dónde se importe).
-3. **Sin autorización por propiedad de recurso en Usuarios** (ver Fase 6 arriba) — es intencional, no un descuido de seguridad.
+2. **Sin autorización por propiedad de recurso en Usuarios** (ver Fase 6 arriba) — es intencional, no un descuido de seguridad.
 
-## Cómo levantar el proyecto (backend)
+## Cómo levantar el proyecto
 
-```
+Backend:
+
+```bash
 docker compose up -d
 cd server
 npm install
 npx prisma generate
 npx prisma migrate dev
 npx prisma db seed
+npm run dev
+```
+
+Frontend, en otra terminal:
+
+```bash
+cd client
+npm install
 npm run dev
 ```
 
