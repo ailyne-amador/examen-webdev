@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { login } from "../controllers/auth.controller";
+import { serviceToken } from "../controllers/auth.controller";
 import * as usuarioController from "../controllers/usuario.controller";
 import * as productoController from "../controllers/producto.controller";
 import * as clienteController from "../controllers/cliente.controller";
@@ -9,7 +9,7 @@ import { upload } from "../middlewares/upload.middleware";
 
 const router = Router();
 
-router.post("/login", login);
+router.post("/auth/token", serviceToken);
 
 router.get("/dashboard", authMiddleware, dashboardController.obtener);
 

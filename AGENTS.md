@@ -79,15 +79,15 @@ Convenciones HTTP ya establecidas: `201` en creación, `204` sin body en elimina
 DATABASE_URL="postgresql://ventasfix:ventasfix_pass@localhost:5432/ventasfix_db"
 JWT_SECRET="..."
 PORT=4000
-```
-Pendiente agregar en Fase 10: credenciales de servicio para Softland (`client_id`/`client_secret`).
+SOFTLAND_CLIENT_ID="..."
+SOFTLAND_CLIENT_SECRET="..."
 
 ## Estado actual por fase
 
 - ✅ **Fase 0-1** — Docker con Postgres 16 corriendo, contenedor `ventasfix_db`.
 - ✅ **Fase 2** — Esqueleto Express + TS. `app.ts` configura cors (`origin: http://localhost:5173`, `credentials: true`), `express.json()`, `cookieParser()`, y sirve `/uploads` como estático. `GET /health` responde `{ ok: true }`.
-- ✅ **Fase 3** — Modelado en Prisma: modelos `Usuario`, `Producto`, `Cliente` (el modelo `Cliente` está definido en el schema pero su CRUD — Fase 8 — no se ha construido todavía). Migraciones aplicadas.
-+ ✅ **Fase 3** — Modelado en Prisma: modelos `Usuario`, `Producto`, `Cliente`. Migraciones aplicadas.
+- ✅ **Fase 3** — Modelado en Prisma: modelos `Usuario`, `Producto`, `Cliente`. Migraciones aplicadas.
+ 
 - ✅ **Fase 4** — Seed con un usuario inicial (`@ventasfix.cl`), password hasheada con Argon2.
 - ✅ **Fase 5** — Autenticación completa: `hashPassword`/`verifyPassword` (Argon2), `POST /login` (Zod → verifica → firma JWT → cookie httpOnly), `authMiddleware` (acepta Bearer o cookie).
 - ✅ **Fase 6** — CRUD de Usuarios completo y probado en Postman (las 5 operaciones). Incluye:
@@ -98,12 +98,13 @@ Pendiente agregar en Fase 10: credenciales de servicio para Softland (`client_id
 
 - ✅ **Fase 8** — CRUD de Clientes completado con schema Zod, service Prisma, controller y rutas protegidas (`GET`, `POST`, `PUT`, `DELETE`). Validación de email, respuestas `404` para recursos inexistentes y smoke test end-to-end verificados.
 
+- ✅ **Fase 9** — Endpoint protegido `GET /dashboard` con los conteos de usuarios, productos y clientes, calculados en paralelo.
+
   Decisión de diseño relevante para Productos: `stockBajo`/`stockAlto`/`stockMinimo` son umbrales **configurables por producto** (ya existen como columnas en el modelo, no requirió migración). `estadoStock` ("bajo"/"normal"/"alto") es un **campo derivado calculado en el service** (`calcularEstadoStock`), nunca almacenado en la BD, para evitar que quede desincronizado del `stockActual` real.
+- ✅ **Fase 10** — Rutas de backoffice y API externa separadas. Los endpoints `/api/v1/...` reutilizan los mismos controllers/services, y `POST /api/v1/auth/token` entrega JWT a Softland usando `client_id`/`client_secret`.
 
 ## Qué falta (fases pendientes, en orden)
 
-- ✅ **Fase 9** — Endpoint protegido `GET /dashboard` con los conteos de usuarios, productos y clientes, calculados en paralelo.
-- **Fase 10** — Separar rutas de backoffice (`/usuarios`, `/productos`, ...) de rutas para Softland (`/api/v1/...`), reutilizando los mismos controllers/services. Crear `POST /api/v1/auth/token` para que Softland obtenga su JWT vía `client_id`/`client_secret`. Documentar en README.
 - **Fase 11** — Setup de `client/` con Vite + Tailwind + axios + react-router-dom.
 - **Fase 12** — Auth en frontend: `AuthContext`, página de login, `ProtectedRoute`, router con las rutas del sistema.
 - **Fase 13** — Pantallas CRUD (Usuarios como referencia, luego Productos con input de imagen, luego Clientes) + Dashboard.
@@ -130,4 +131,4 @@ npx prisma db seed
 npm run dev
 ```
 
-Probar `GET http://localhost:4000/health` antes de probar cualquier endpoint. Login vía `POST /login` con las credenciales del seed antes de probar cualquier ruta protegida (todas excepto `/login` requieren `authMiddleware`).
+Probar `GET http://localhost:4000/health` antes de probar cualquier endpoint. Login vía `POST /login` con las credenciales del seed para el backoffice o vía `POST /api/v1/auth/token` con las credenciales de Softland; ambas rutas entregan acceso a los endpoints protegidos correspondientes.

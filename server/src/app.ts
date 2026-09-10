@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import path from 'node:path';
 import multer from 'multer';
 import { NextFunction, Request, Response } from 'express';
+import externalRoutes from './routes/external.routes';
 import webRoutes from './routes/web.routes';
 const app = express();
 
@@ -25,6 +26,7 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
+app.use('/api/v1', externalRoutes);
 app.use('/', webRoutes);
 
 app.use((error: unknown, _req: Request, res: Response, next: NextFunction) => {
