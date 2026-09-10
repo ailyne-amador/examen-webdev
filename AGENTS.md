@@ -20,7 +20,7 @@ Idea central de la arquitectura: **backoffice y Softland comparten los mismos co
 - cookie-parser, cors, multer, dotenv
 - Ejecución en desarrollo: `tsx watch`
 
-**Frontend** (`client/`): Vite + React. Tailwind CSS v4, axios y react-router-dom. La autenticación, el router, el login, el shell protegido y las pantallas CRUD de Clientes y Productos están implementados; quedan pendientes Usuarios y Dashboard.
+**Frontend** (`client/`): Vite + React. Tailwind CSS v4, axios y react-router-dom. La autenticación, el router, el login, el shell protegido, el dashboard y las pantallas CRUD de Usuarios, Clientes y Productos están implementados.
 
 ## Estructura de carpetas
 
@@ -37,7 +37,9 @@ client/
 │   │   ├── LoginPage.jsx       # acceso inicial al backoffice
 │   │   ├── ProfilePage.jsx     # consulta de datos y edición de correo/contraseña
 │   │   ├── ClientesPage.jsx    # listado, alta, edición y eliminación de clientes
-│   │   └── ProductosPage.jsx   # tarjetas, alta, edición, imagen y eliminación de productos
+│   │   ├── UsuariosPage.jsx    # listado, alta, detalle, eliminación y edición de identidad de usuarios
+│   │   ├── ProductosPage.jsx   # tarjetas, alta, edición, imagen y eliminación de productos
+│   │   └── DashboardPage.jsx   # resumen de conteos y accesos rápidos
 │   ├── App.jsx                 # router y shell protegido
 │   ├── index.css               # Tailwind, tokens y estilos visuales
 │   └── main.jsx
@@ -135,10 +137,11 @@ VITE_API_URL="http://localhost:4000"
 - ✅ **Fase 11** — Frontend inicializado en `client/` con Vite + React. Tailwind CSS v4 quedó integrado mediante `@tailwindcss/vite`, y se instalaron axios y react-router-dom. `src/lib/api.js` centraliza el cliente Axios con `VITE_API_URL`, fallback a `http://localhost:4000` y `withCredentials: true`. `npm run build` pasa.
 - ✅ **Fase 12** — Autenticación del frontend completada: `AuthContext` con login/logout y persistencia de usuario por pestaña, `LoginPage` responsive, `ProtectedRoute`, router con `/dashboard`, `/usuarios`, `/productos`, `/clientes` y `/perfil`, shell autenticado con navegación y cierre de sesión, y `ProfilePage` con datos no editables y un componente `ProfileEditForm` reutilizable para actualizar únicamente el correo o la contraseña. El login es la página inicial. Se aplicó un diseño minimalista y profesional definido en `frontend-design.md`; login verificado en desktop y móvil, perfil verificado en desktop, `npm run build` pasa.
 - ✅ **Fase 13 (Productos)** — CRUD de Productos en el backoffice con `ProductosPage.jsx`: listado responsive en tarjetas, imagen, SKU, precios, stock actual/mínimo, umbrales `stockBajo`/`stockAlto` y bandera derivada de `estadoStock`. Incluye rutas `/productos`, `/productos/nuevo` y `/productos/:id`, formulario `multipart/form-data` para crear/editar, reemplazo opcional de imagen y eliminación con advertencia. Componentes internos reutilizables `ProductCard`, `ProductInput` y `StockBadge`. `npm run build` pasa y el flujo visual de listado, creación y edición fue verificado.
+- ✅ **Fase 13 (Usuarios)** — CRUD de Usuarios en el backoffice con `UsuariosPage.jsx`: tarjetas clickeables, alta en `/usuarios/nuevo`, ficha individual en `/usuarios/:id`, eliminación con confirmación y edición sensible de identidad en `/usuarios/:id/identidad`, con opciones separadas para nombre completo o RUT y advertencia de responsabilidad. `npm run build` pasa y el flujo visual de listado, detalle y edición fue verificado.
+- ✅ **Fase 13 (Dashboard)** — Dashboard del backoffice implementado con `DashboardPage.jsx`: consume el endpoint protegido `GET /dashboard`, muestra conteos de usuarios, productos y clientes, estados de carga/error, tarjetas enlazadas a cada listado y accesos rápidos para crear registros. Diseño responsive integrado en `index.css`; login y dashboard verificados visualmente; `npm run build` pasa.
 
 ## Qué falta (fases pendientes, en orden)
 
-- **Fase 13 pendiente** — Pantallas CRUD de Usuarios y Dashboard; Productos y Clientes ya están implementados en el frontend.
 - **Fase 14** — Colección de Postman completa contra `/api/v1/...` (token + 5 operaciones × 3 entidades), verificando 401 sin token.
 - **Fase 15** — Checklist final de la pauta (login, validaciones backend, password hasheada, rechazo sin token, 3 CRUD funcionando desde ambos lados, dashboard, `precioVenta` con IVA).
 - **Fase 16** — Grabación de los 2 videos y entrega del zip.
