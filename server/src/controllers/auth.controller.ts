@@ -58,6 +58,11 @@ export async function login(req: Request, res: Response) {
   });
 }
 
+export function logout(_req: Request, res: Response) {
+  res.clearCookie('token', { httpOnly: true, sameSite: 'lax' });
+  return res.status(204).send();
+}
+
 export function serviceToken(req: Request, res: Response) {
   const parsed = serviceTokenSchema.safeParse(req.body);
   if (!parsed.success) {

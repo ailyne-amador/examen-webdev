@@ -20,21 +20,27 @@ Idea central de la arquitectura: **backoffice y Softland comparten los mismos co
 - cookie-parser, cors, multer, dotenv
 - Ejecución en desarrollo: `tsx watch`
 
-**Frontend** (`client/`): Vite + React configurado. Tailwind CSS v4, axios y react-router-dom ya están instalados; la implementación de autenticación y pantallas queda para las fases siguientes.
+**Frontend** (`client/`): Vite + React. Tailwind CSS v4, axios y react-router-dom. La autenticación, el router, el login y el shell protegido del backoffice ya están implementados; las pantallas CRUD quedan para la Fase 13.
 
 ## Estructura de carpetas
 
 ```text
 client/
 ├── src/
+│   ├── components/
+│   │   └── ProtectedRoute.jsx  # guard para rutas autenticadas
+│   ├── context/
+│   │   └── AuthContext.jsx     # login, logout y usuario actual
 │   ├── lib/
-│   │   └── api.js             # instancia compartida de Axios
-│   ├── App.jsx                # shell inicial del backoffice
-│   ├── index.css              # Tailwind y estilos base
+│   │   └── api.js              # instancia compartida de Axios
+│   ├── pages/
+│   │   └── LoginPage.jsx       # acceso inicial al backoffice
+│   ├── App.jsx                 # router y shell protegido
+│   ├── index.css               # Tailwind, tokens y estilos visuales
 │   └── main.jsx
 ├── index.html
 ├── package.json
-└── vite.config.js             # React + Tailwind
+└── vite.config.js              # React + Tailwind
 
 server/
 ├── prisma/
@@ -123,11 +129,11 @@ VITE_API_URL="http://localhost:4000"
 
   Decisión de diseño relevante para Productos: `stockBajo`/`stockAlto`/`stockMinimo` son umbrales **configurables por producto** (ya existen como columnas en el modelo, no requirió migración). `estadoStock` ("bajo"/"normal"/"alto") es un **campo derivado calculado en el service** (`calcularEstadoStock`), nunca almacenado en la BD, para evitar que quede desincronizado del `stockActual` real.
 - ✅ **Fase 10** — Rutas de backoffice y API externa separadas. Los endpoints `/api/v1/...` reutilizan los mismos controllers/services, y `POST /api/v1/auth/token` entrega JWT a Softland usando `client_id`/`client_secret`.
-- ✅ **Fase 11** — Frontend inicializado en `client/` con Vite + React. Tailwind CSS v4 quedó integrado mediante `@tailwindcss/vite`, y se instalaron axios y react-router-dom. `src/lib/api.js` centraliza el cliente Axios con `VITE_API_URL`, fallback a `http://localhost:4000` y `withCredentials: true`. El starter de Vite fue reemplazado por un shell mínimo de VentasFix y `npm run build` pasa.
+- ✅ **Fase 11** — Frontend inicializado en `client/` con Vite + React. Tailwind CSS v4 quedó integrado mediante `@tailwindcss/vite`, y se instalaron axios y react-router-dom. `src/lib/api.js` centraliza el cliente Axios con `VITE_API_URL`, fallback a `http://localhost:4000` y `withCredentials: true`. `npm run build` pasa.
+- ✅ **Fase 12** — Autenticación del frontend completada: `AuthContext` con login/logout y persistencia de usuario por pestaña, `LoginPage` responsive, `ProtectedRoute`, router con `/dashboard`, `/usuarios`, `/productos` y `/clientes`, y shell autenticado con navegación y cierre de sesión. El login es la página inicial. Se aplicó un diseño minimalista y profesional definido en `frontend-design.md`; login desktop y móvil verificados, `npm run build` pasa.
 
 ## Qué falta (fases pendientes, en orden)
 
-- **Fase 12** — Auth en frontend: `AuthContext`, página de login, `ProtectedRoute`, router con las rutas del sistema.
 - **Fase 13** — Pantallas CRUD (Usuarios como referencia, luego Productos con input de imagen, luego Clientes) + Dashboard.
 - **Fase 14** — Colección de Postman completa contra `/api/v1/...` (token + 5 operaciones × 3 entidades), verificando 401 sin token.
 - **Fase 15** — Checklist final de la pauta (login, validaciones backend, password hasheada, rechazo sin token, 3 CRUD funcionando desde ambos lados, dashboard, `precioVenta` con IVA).
@@ -139,6 +145,8 @@ Estas son diferencias entre lo que sugiere la guía base del proyecto y lo que r
 
 1. **Prisma con driver adapters, no el motor por defecto.** La guía original asumía `provider = "prisma-client-js"` simple. El proyecto real usa un generator con `output` custom (cliente generado en `generated/prisma/client`, no en `node_modules/@prisma/client`) más `@prisma/adapter-pg` y un `pg.Pool` explícito en `config/prisma.ts`. Al importar `PrismaClient` en código nuevo, usar la ruta relativa correcta hacia `generated/prisma/client` (verificar cuántos niveles según desde dónde se importe).
 2. **Sin autorización por propiedad de recurso en Usuarios** (ver Fase 6 arriba) — es intencional, no un descuido de seguridad.
+
+3. **Logout del backoffice mediante endpoint propio.** `POST /logout` limpia la cookie httpOnly `token`; el frontend también elimina el usuario guardado en `sessionStorage` aunque la API no esté disponible.
 
 ## Cómo levantar el proyecto
 
