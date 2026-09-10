@@ -1,4 +1,4 @@
-import { PrismaClient } from "../generated/prisma/client"; // Ajusta a la ruta de tu cliente generado
+import { PrismaClient } from "../generated/prisma/client"; 
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 

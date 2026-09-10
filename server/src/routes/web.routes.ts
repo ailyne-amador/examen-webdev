@@ -1,7 +1,35 @@
 import { Router } from "express";
 import { login } from "../controllers/auth.controller";
+import * as usuarioController from "../controllers/usuario.controller";
+import * as productoController from "../controllers/producto.controller";
+import * as clienteController from "../controllers/cliente.controller";
+import { authMiddleware } from "../middlewares/auth.middleware";
+import { upload } from "../middlewares/upload.middleware";
 
 const router = Router();
+
+// Auth
 router.post("/login", login);
+
+// Usuarios
+router.get("/usuarios", authMiddleware, usuarioController.listar);
+router.get("/usuarios/:id", authMiddleware, usuarioController.obtener);
+router.post("/usuarios", authMiddleware, usuarioController.crear);
+router.put("/usuarios/:id", authMiddleware, usuarioController.actualizar);
+router.delete("/usuarios/:id", authMiddleware, usuarioController.eliminar);
+
+// Productos
+router.get("/productos", authMiddleware, productoController.listar);
+router.get("/productos/:id", authMiddleware, productoController.obtener);
+router.post("/productos", authMiddleware, upload.single("imagen"), productoController.crear);
+router.put("/productos/:id", authMiddleware, upload.single("imagen"), productoController.actualizar);
+router.delete("/productos/:id", authMiddleware, productoController.eliminar);
+
+// Clientes
+router.get("/clientes", authMiddleware, clienteController.listar);
+router.get("/clientes/:id", authMiddleware, clienteController.obtener);
+router.post("/clientes", authMiddleware, clienteController.crear);
+router.put("/clientes/:id", authMiddleware, clienteController.actualizar);
+router.delete("/clientes/:id", authMiddleware, clienteController.eliminar);
 
 export default router;
