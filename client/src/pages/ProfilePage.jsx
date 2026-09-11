@@ -1,10 +1,15 @@
+// Página de perfil: el usuario autenticado ve sus datos y puede cambiar
+// su correo o contraseña (solo esas dos credenciales)
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import api from '../lib/api'
 
+// Estado inicial vacío mientras se cargan los datos reales del usuario
 const emptyProfile = { rut: '', nombre: '', apellido: '', email: '' }
 
+// Mini-formulario reutilizable para editar un solo dato: correo o contraseña.
+// `mode` define cuál se edita y ajusta etiquetas, tipo de input y validaciones
 function ProfileEditForm({ mode, initialValue, loading, onCancel, onSubmit }) {
   const isEmail = mode === 'email'
   const [value, setValue] = useState(initialValue)
@@ -53,6 +58,7 @@ function ProfilePage() {
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(false)
 
+  // Carga los datos del usuario autenticado; `active` evita setState si se desmonta
   useEffect(() => {
     let active = true
 
@@ -71,12 +77,15 @@ function ProfilePage() {
     return () => { active = false }
   }, [user.id])
 
+  // Activa el modo de edición ('email' o 'password') y limpia mensajes previos
   function startEditing(mode) {
     setEditMode(mode)
     setError('')
     setSaved(false)
   }
 
+  // Guarda el cambio en la API y actualiza también el contexto de sesión
+  // (si cambió el correo, el usuario logueado debe reflejarlo)
   async function handleSubmit(value) {
     try {
       const updated = await updateUser(user.id, { [editMode]: value })
@@ -131,6 +140,7 @@ function ProfilePage() {
             />
           ) : (
             <>
+              {/* Vista de solo lectura de los datos de la cuenta */}
               <dl className="profile-details">
                 <div><dt>Nombre completo</dt><dd>{profile.nombre} {profile.apellido}</dd></div>
                 <div><dt>RUT</dt><dd>{profile.rut}</dd></div>
@@ -150,6 +160,7 @@ function ProfilePage() {
           )}
         </article>
 
+        {/* Panel lateral informativo: explica qué se puede editar desde aquí */}
         <aside className="profile-aside">
           <span className="profile-aside-mark" aria-hidden="true">V</span>
           <h3>Una cuenta al día</h3>

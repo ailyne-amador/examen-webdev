@@ -1,3 +1,4 @@
+// Página de inicio de sesión: panel informativo de la marca + formulario de acceso
 import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
@@ -9,10 +10,13 @@ function LoginPage() {
   const location = useLocation()
   const { form, error, setError, handleChange } = useForm({ email: '', password: '' })
 
+  // Si ya hay sesión iniciada no tiene sentido mostrar el login: va al dashboard
   useEffect(() => {
     if (user) navigate('/dashboard', { replace: true })
   }, [navigate, user])
 
+  // Envía las credenciales; si son válidas vuelve a la ruta que el usuario
+  // quería visitar (guardada por ProtectedRoute) o al dashboard por defecto
   async function handleSubmit(event) {
     event.preventDefault()
     try {
@@ -25,6 +29,7 @@ function LoginPage() {
 
   return (
     <main className="login-page">
+      {/* Panel izquierdo: presentación de la marca (solo informativo/decorativo) */}
       <section className="login-story" aria-label="Sobre VentasFix">
         <div className="login-orbit login-orbit-top" aria-hidden="true" />
         <div className="login-orbit login-orbit-bottom" aria-hidden="true" />
@@ -33,6 +38,7 @@ function LoginPage() {
         <div className="relative text-xs text-[#929c94]"><span>VentasFix / Operación diaria</span></div>
       </section>
 
+      {/* Panel derecho: formulario de acceso */}
       <section className="login-panel">
         <div className="login-form-wrap">
           <div className="mb-14 flex items-center gap-3 lg:hidden"><span className="login-mobile-mark">V</span><span className="font-semibold tracking-[-0.02em]">VentasFix</span></div>

@@ -1,3 +1,5 @@
+// Service de clientes: capa de acceso a datos (Prisma) del módulo.
+// No tiene lógica extra: los tipos de entrada vienen de los schemas Zod.
 import { prisma } from "../config/prisma";
 import type { CrearClienteInput, ActualizarClienteInput } from "../schemas/cliente.schema";
 

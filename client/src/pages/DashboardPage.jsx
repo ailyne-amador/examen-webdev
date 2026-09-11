@@ -1,7 +1,10 @@
+// Página principal: resumen con conteos de usuarios, productos y clientes,
+// más accesos rápidos para crear nuevos registros
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api, { getErrorMessage } from '../lib/api'
 
+// Configuración de las tarjetas de resumen: etiqueta, descripción y destino
 const metrics = [
   { key: 'usuarios', label: 'Usuarios', description: 'Personas con acceso al backoffice', path: '/usuarios' },
   { key: 'productos', label: 'Productos', description: 'Ítems registrados en el catálogo', path: '/productos' },
@@ -10,6 +13,7 @@ const metrics = [
 
 const loadErrorMessage = 'No pudimos cargar el resumen. Intenta nuevamente.'
 
+// Tarjeta clickeable de una métrica; lleva al listado correspondiente
 function MetricCard({ metric, value }) {
   return (
     <Link to={metric.path} className="dashboard-metric focus-ring">
@@ -25,6 +29,8 @@ export default function DashboardPage() {
   const [summary, setSummary] = useState(null)
   const [error, setError] = useState('')
 
+  // Pide el resumen al cargar la página; `active` evita actualizar el estado
+  // si el componente se desmonta antes de que responda la API
   useEffect(() => {
     let active = true
     api.get('/dashboard')

@@ -1,5 +1,7 @@
+// Schemas Zod del módulo de clientes: validan el body de crear/actualizar.
 import { z } from "zod";
 
+// Campos base del cliente; todos obligatorios al crear
 const clienteBase = z.object({
   rutEmpresa: z.string().min(1),
   rubro: z.string().min(1),
@@ -11,6 +13,7 @@ const clienteBase = z.object({
 });
 
 export const crearClienteSchema = clienteBase;
+// Actualización parcial: mismo schema pero con todos los campos opcionales
 export const actualizarClienteSchema = clienteBase.partial();
 
 export type CrearClienteInput = z.infer<typeof crearClienteSchema>;
