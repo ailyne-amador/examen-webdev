@@ -32,6 +32,24 @@ button:disabled { cursor: wait; }
 .app-rail { background: var(--ink); color: var(--paper); }
 .app-main { min-height: 100vh; padding-left: 15rem; }
 .app-header { display: flex; min-height: 7rem; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); padding: 1.5rem 4rem; }
+.app-header-leading { display: flex; align-items: center; gap: 1rem; }
+.mobile-menu-button { display: none; width: 2.5rem; height: 2.5rem; place-items: center; border: 1px solid var(--line); border-radius: 2px; background: var(--surface); color: var(--accent); transition: background 140ms ease, border-color 140ms ease; }
+.mobile-menu-button:hover { border-color: var(--accent); background: var(--surface-soft); }
+.mobile-menu-symbol { position: relative; display: block; width: 1rem; height: .7rem; border-top: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; }
+.mobile-menu-symbol::after { position: absolute; top: 50%; left: 0; width: 100%; height: 1.5px; background: currentColor; content: ''; transform: translateY(-50%); }
+.mobile-menu-symbol-open { border-color: transparent; }
+.mobile-menu-symbol-open::before { position: absolute; top: 50%; left: 0; width: 100%; height: 1.5px; background: currentColor; content: ''; transform: translateY(-50%) rotate(45deg); }
+.mobile-menu-symbol-open::after { transform: translateY(-50%) rotate(-45deg); }
+.mobile-nav { display: none; border-bottom: 1px solid #353c37; background: var(--ink); padding: .75rem 1.25rem 1rem; color: var(--paper); }
+.mobile-nav-links { display: grid; gap: .25rem; }
+.mobile-nav-link { display: flex; align-items: center; gap: .75rem; border-left: 2px solid transparent; padding: .75rem .8rem; color: #aeb8b0; font-size: .82rem; text-decoration: none; }
+.mobile-nav-link:hover, .mobile-nav-link-active { border-color: #d7ded8; background: #29302b; color: white; }
+.mobile-nav-account { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-top: 1px solid #353c37; margin-top: .65rem; padding: .85rem .8rem 0; }
+.mobile-nav-account-link { display: grid; min-width: 0; border: 0; background: transparent; padding: 0; color: var(--paper); text-align: left; }
+.mobile-nav-account-link span:first-child { overflow: hidden; font-size: .8rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.mobile-nav-account-link span:last-child { overflow: hidden; margin-top: .2rem; color: #929c94; font-size: .7rem; text-overflow: ellipsis; white-space: nowrap; }
+.mobile-nav-logout { flex: 0 0 auto; border: 0; background: transparent; color: #aeb8b0; font-size: .72rem; }
+.mobile-nav-logout:hover { color: white; }
 .app-content { width: min(100%, 90rem); margin: 0 auto; padding: 3rem 4rem 5rem; }
 .app-breadcrumb { color: var(--muted); font-size: .75rem; letter-spacing: .02em; }
 .app-header-title { margin: .5rem 0 0; font-size: clamp(1.6rem, 2vw, 2.25rem); font-weight: 600; letter-spacing: -.04em; }
@@ -185,14 +203,16 @@ button:disabled { cursor: wait; }
 .profile-option small { color: var(--muted); font-size: .76rem; }
 .profile-option > span:last-child { color: var(--accent); font-size: 1.1rem; }
 
-@media (max-width: 1023px) {
-  .login-page { display: block; }
-  .login-story { display: none; }
-  .login-panel { min-height: 100vh; padding: 2.5rem 1.25rem; }
-  .app-main { padding-left: 0; }
-  .app-header { padding: 1.25rem; }
-  .app-content { padding: 2rem 1.25rem 3rem; }
-}
+ @media (max-width: 1023px) {
+   .login-page { display: block; }
+   .login-story { display: none; }
+   .login-panel { min-height: 100vh; padding: 2.5rem 1.25rem; }
+   .app-main { padding-left: 0; }
+   .app-header { padding: 1.25rem; }
+   .app-content { padding: 2rem 1.25rem 3rem; }
+  .mobile-menu-button { display: grid; }
+  .mobile-nav { display: grid; }
+ }
 @media (max-width: 767px) { .profile-intro { align-items: flex-start; margin-top: 2rem; } .profile-layout { grid-template-columns: 1fr; } .profile-aside { display: none; } }
 @media (max-width: 560px) { .profile-card-heading { display: block; } .profile-status { display: inline-block; margin-top: 1rem; } .profile-fields { grid-template-columns: 1fr; } .profile-field-wide { grid-column: auto; } .profile-actions { flex-direction: column-reverse; } .profile-cancel, .profile-save { width: 100%; } }
 @media (prefers-reduced-motion: reduce) { .login-input, .login-button, .rail-link { transition: none; } }
