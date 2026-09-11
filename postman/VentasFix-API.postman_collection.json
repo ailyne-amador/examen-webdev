@@ -1,0 +1,226 @@
+{
+  "info": {
+    "_postman_id": "9a5a0c3b-6d2a-4bde-9d1a-ventasfix-api",
+    "name": "VentasFix API externa",
+    "description": "Colección para validar la API externa de Softland: token, CRUD de usuarios, productos y clientes, y rechazo sin autenticación.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.request.headers.upsert({ key: 'Accept', value: 'application/json' });"
+        ]
+      }
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4000/api/v1"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "usuario_id",
+      "value": ""
+    },
+    {
+      "key": "producto_id",
+      "value": ""
+    },
+    {
+      "key": "cliente_id",
+      "value": ""
+    },
+    {
+      "key": "imagen_path",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "Obtener token de servicio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "const body = pm.response.json();",
+                  "pm.test('Entrega access_token Bearer', function () { pm.expect(body.access_token).to.be.a('string').and.not.empty; pm.expect(body.token_type).to.eql('Bearer'); });",
+                  "pm.environment.set('access_token', body.access_token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"client_id\": \"{{softland_client_id}}\",\n  \"client_secret\": \"{{softland_client_secret}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/token",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "token"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Seguridad",
+      "item": [
+        {
+          "name": "Rechazar request sin token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 401 sin token', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/usuarios",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "item": [
+        {
+          "name": "Listar usuarios",
+          "event": [{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('Responde 200', function () { pm.response.to.have.status(200); });","pm.test('Entrega una lista', function () { pm.expect(pm.response.json()).to.be.an('array'); });"]}}],
+          "request": {"method":"GET","header":[],"url":{"raw":"{{base_url}}/usuarios","host":["{{base_url}}"],"path":["usuarios"]}}
+        },
+        {
+          "name": "Crear usuario",
+          "event": [{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('Responde 201', function () { pm.response.to.have.status(201); });","const body = pm.response.json();","pm.test('Entrega id de usuario', function () { pm.expect(body.id).to.be.a('number'); });","pm.environment.set('usuario_id', body.id);"]}}],
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"rut\": \"99{{$randomInt}}-{{$randomInt}}\",\n  \"nombre\": \"Usuario Postman\",\n  \"apellido\": \"Prueba\",\n  \"email\": \"postman.{{$timestamp}}@ventasfix.cl\",\n  \"password\": \"Postman123!\"\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"{{base_url}}/usuarios","host":["{{base_url}}"],"path":["usuarios"]}}
+        },
+        {
+          "name": "Obtener usuario creado",
+          "event": [{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('Responde 200', function () { pm.response.to.have.status(200); });"]}}],
+          "request": {"method":"GET","header":[],"url":{"raw":"{{base_url}}/usuarios/{{usuario_id}}","host":["{{base_url}}"],"path":["usuarios","{{usuario_id}}"]}}
+        },
+        {
+          "name": "Actualizar usuario creado",
+          "event": [{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('Responde 200', function () { pm.response.to.have.status(200); });"]}}],
+          "request": {"method":"PUT","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"nombre\": \"Usuario Postman Actualizado\"\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"{{base_url}}/usuarios/{{usuario_id}}","host":["{{base_url}}"],"path":["usuarios","{{usuario_id}}"]}}
+        },
+        {
+          "name": "Eliminar usuario creado",
+          "event": [{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('Responde 204', function () { pm.response.to.have.status(204); });"]}}],
+          "request": {"method":"DELETE","header":[],"url":{"raw":"{{base_url}}/usuarios/{{usuario_id}}","host":["{{base_url}}"],"path":["usuarios","{{usuario_id}}"]}}
+        }
+      ]
+    },
+    {
+      "name": "Productos",
+      "item": [
+        {
+          "name": "Listar productos",
+          "event": [{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('Responde 200', function () { pm.response.to.have.status(200); });","pm.test('Entrega una lista', function () { pm.expect(pm.response.json()).to.be.an('array'); });"]}}],
+          "request": {"method":"GET","header":[],"url":{"raw":"{{base_url}}/productos","host":["{{base_url}}"],"path":["productos"]}}
+        },
+        {
+          "name": "Crear producto con imagen",
+          "event": [{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('Responde 201', function () { pm.response.to.have.status(201); });","const body = pm.response.json();","pm.test('Entrega id de producto', function () { pm.expect(body.id).to.be.a('number'); });","pm.environment.set('producto_id', body.id);"]}}],
+          "request": {"method":"POST","header":[],"body":{"mode":"formdata","formdata":[{"key":"sku","value":"POSTMAN-{{$timestamp}}","type":"text"},{"key":"nombre","value":"Producto Postman","type":"text"},{"key":"descripcionCorta","value":"Producto creado desde Postman","type":"text"},{"key":"descripcionLarga","value":"Producto de prueba para validar la API externa.","type":"text"},{"key":"precioNeto","value":"15000","type":"text"},{"key":"stockActual","value":"25","type":"text"},{"key":"stockMinimo","value":"5","type":"text"},{"key":"stockBajo","value":"10","type":"text"},{"key":"stockAlto","value":"50","type":"text"},{"key":"imagen","type":"file","src":"{{imagen_path}}"}]},"url":{"raw":"{{base_url}}/productos","host":["{{base_url}}"],"path":["productos"]}}
+        },
+        {
+          "name": "Obtener producto creado",
+          "event": [{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('Responde 200', function () { pm.response.to.have.status(200); });"]}}],
+          "request": {"method":"GET","header":[],"url":{"raw":"{{base_url}}/productos/{{producto_id}}","host":["{{base_url}}"],"path":["productos","{{producto_id}}"]}}
+        },
+        {
+          "name": "Actualizar producto creado",
+          "event": [{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('Responde 200', function () { pm.response.to.have.status(200); });"]}}],
+          "request": {"method":"PUT","header":[],"body":{"mode":"formdata","formdata":[{"key":"nombre","value":"Producto Postman Actualizado","type":"text"}]},"url":{"raw":"{{base_url}}/productos/{{producto_id}}","host":["{{base_url}}"],"path":["productos","{{producto_id}}"]}}
+        },
+        {
+          "name": "Eliminar producto creado",
+          "event": [{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('Responde 204', function () { pm.response.to.have.status(204); });"]}}],
+          "request": {"method":"DELETE","header":[],"url":{"raw":"{{base_url}}/productos/{{producto_id}}","host":["{{base_url}}"],"path":["productos","{{producto_id}}"]}}
+        }
+      ]
+    },
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "Listar clientes",
+          "event": [{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('Responde 200', function () { pm.response.to.have.status(200); });","pm.test('Entrega una lista', function () { pm.expect(pm.response.json()).to.be.an('array'); });"]}}],
+          "request": {"method":"GET","header":[],"url":{"raw":"{{base_url}}/clientes","host":["{{base_url}}"],"path":["clientes"]}}
+        },
+        {
+          "name":"Crear cliente",
+          "event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('Responde 201', function () { pm.response.to.have.status(201); });","const body = pm.response.json();","pm.test('Entrega id de cliente', function () { pm.expect(body.id).to.be.a('number'); });","pm.environment.set('cliente_id', body.id);"]}}],
+          "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"rutEmpresa\": \"76{{$randomInt}}-{{$randomInt}}\",\n  \"rubro\": \"Tecnología\",\n  \"razonSocial\": \"Cliente Postman SpA\",\n  \"telefono\": \"+56911111111\",\n  \"direccion\": \"Av. Postman 123, Santiago\",\n  \"nombreContacto\": \"Contacto Postman\",\n  \"emailContacto\": \"contacto.{{$timestamp}}@ejemplo.cl\"\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"{{base_url}}/clientes","host":["{{base_url}}"],"path":["clientes"]}}
+        },
+        {
+          "name":"Obtener cliente creado",
+          "event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('Responde 200', function () { pm.response.to.have.status(200); });"]}}],
+          "request":{"method":"GET","header":[],"url":{"raw":"{{base_url}}/clientes/{{cliente_id}}","host":["{{base_url}}"],"path":["clientes","{{cliente_id}}"]}}
+        },
+        {
+          "name":"Actualizar cliente creado",
+          "event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('Responde 200', function () { pm.response.to.have.status(200); });"]}}],
+          "request":{"method":"PUT","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"telefono\": \"+56922222222\"\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"{{base_url}}/clientes/{{cliente_id}}","host":["{{base_url}}"],"path":["clientes","{{cliente_id}}"]}}
+        },
+        {
+          "name":"Eliminar cliente creado",
+          "event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('Responde 204', function () { pm.response.to.have.status(204); });"]}}],
+          "request":{"method":"DELETE","header":[],"url":{"raw":"{{base_url}}/clientes/{{cliente_id}}","host":["{{base_url}}"],"path":["clientes","{{cliente_id}}"]}}
+        }
+      ]
+    }
+  ]
+}

@@ -25,6 +25,11 @@ Idea central de la arquitectura: **backoffice y Softland comparten los mismos co
 ## Estructura de carpetas
 
 ```text
+postman/
+├── VentasFix-API.postman_collection.json             # colección de la API externa
+├── VentasFix-Local.postman_environment.example.json # environment versionable sin secretos
+└── VentasFix-Local.postman_environment.json         # environment local, ignorado por Git
+
 client/
 ├── src/
 │   ├── components/
@@ -140,9 +145,9 @@ VITE_API_URL="http://localhost:4000"
 - ✅ **Fase 13 (Usuarios)** — CRUD de Usuarios en el backoffice con `UsuariosPage.jsx`: tarjetas clickeables, alta en `/usuarios/nuevo`, ficha individual en `/usuarios/:id`, eliminación con confirmación y edición sensible de identidad en `/usuarios/:id/identidad`, con opciones separadas para nombre completo o RUT y advertencia de responsabilidad. `npm run build` pasa y el flujo visual de listado, detalle y edición fue verificado.
 - ✅ **Fase 13 (Dashboard)** — Dashboard del backoffice implementado con `DashboardPage.jsx`: consume el endpoint protegido `GET /dashboard`, muestra conteos de usuarios, productos y clientes, estados de carga/error, tarjetas enlazadas a cada listado y accesos rápidos para crear registros. Diseño responsive integrado en `index.css`; login y dashboard verificados visualmente; `npm run build` pasa.
 
-## Qué falta (fases pendientes, en orden)
+## Estado pendiente (fases restantes, en orden)
 
-- **Fase 14** — Colección de Postman completa contra `/api/v1/...` (token + 5 operaciones × 3 entidades), verificando 401 sin token.
+- ✅ **Fase 14** — Colección de Postman en `postman/VentasFix-API.postman_collection.json` contra `/api/v1/...`: token de servicio, 5 operaciones × 3 entidades, upload de imagen de Producto y verificación `401` sin token. Validada contra la API: token `200`, acceso protegido `200` y request sin token `401`.
 - **Fase 15** — Checklist final de la pauta (login, validaciones backend, password hasheada, rechazo sin token, 3 CRUD funcionando desde ambos lados, dashboard, `precioVenta` con IVA).
 - **Fase 16** — Grabación de los 2 videos y entrega del zip.
 
