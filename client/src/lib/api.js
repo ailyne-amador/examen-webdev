@@ -5,4 +5,8 @@ const api = axios.create({
   withCredentials: true,
 })
 
+export function getErrorMessage(error, fallback) {
+  return error.response?.data?.message || fallback
+}
+
 export default api

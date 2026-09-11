@@ -1,22 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useForm } from '../components/ui'
 
 function LoginPage() {
   const { user, login, loading } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const [form, setForm] = useState({ email: '', password: '' })
-  const [error, setError] = useState('')
+  const { form, error, setError, handleChange } = useForm({ email: '', password: '' })
 
   useEffect(() => {
     if (user) navigate('/dashboard', { replace: true })
   }, [navigate, user])
-
-  function handleChange(event) {
-    setForm((current) => ({ ...current, [event.target.name]: event.target.value }))
-    if (error) setError('')
-  }
 
   async function handleSubmit(event) {
     event.preventDefault()

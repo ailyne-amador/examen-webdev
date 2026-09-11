@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import api from '../lib/api'
+import api, { getErrorMessage } from '../lib/api'
 
 const metrics = [
   { key: 'usuarios', label: 'Usuarios', description: 'Personas con acceso al backoffice', path: '/usuarios' },
@@ -8,9 +8,7 @@ const metrics = [
   { key: 'clientes', label: 'Clientes', description: 'Empresas de tu cartera comercial', path: '/clientes' },
 ]
 
-function getErrorMessage(error) {
-  return error.response?.data?.message || 'No pudimos cargar el resumen. Intenta nuevamente.'
-}
+const loadErrorMessage = 'No pudimos cargar el resumen. Intenta nuevamente.'
 
 function MetricCard({ metric, value }) {
   return (
@@ -31,7 +29,7 @@ export default function DashboardPage() {
     let active = true
     api.get('/dashboard')
       .then(({ data }) => { if (active) setSummary(data) })
-      .catch((loadError) => { if (active) setError(getErrorMessage(loadError)) })
+      .catch((loadError) => { if (active) setError(getErrorMessage(loadError, loadErrorMessage)) })
     return () => { active = false }
   }, [])
 
