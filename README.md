@@ -38,6 +38,8 @@ El backend expone dos superficies HTTP:
 
 No existen dos implementaciones separadas de cada CRUD: ambas superficies reutilizan los mismos controllers y services. Solo cambia la forma de obtener y transportar el JWT.
 
+**Acceso rápido una vez levantado el proyecto:** backoffice en `http://localhost:5173` con `admin@ventasfix.cl` / `Admin123!`; API en `http://localhost:4000` (`/health` para comprobar estado). Ver [Instalación y puesta en marcha](#instalación-y-puesta-en-marcha).
+
 ## Funcionalidades
 
 ### Acceso y sesión
@@ -439,7 +441,7 @@ Desde la raíz:
 docker compose up -d
 ```
 
-El compose crea el contenedor `ventasfix_db` con PostgreSQL 16 y la base `ventasfix_db`.
+El compose crea el contenedor `ventasfix_db` con PostgreSQL 16 y la base `ventasfix_db`. Para detenerlo: `docker compose down` (agregar `-v` si además se quiere borrar el volumen de datos).
 
 ### 2. Configurar y levantar el backend
 
@@ -473,9 +475,11 @@ Respuesta actual:
 
 El seed crea o verifica:
 
-- Usuario: `admin@ventasfix.cl` / `Admin123!`
+- Usuario: `admin@ventasfix.cl` / `Admin123!` (credenciales de acceso al backoffice)
 - Cliente de ejemplo con RUT `76543210-1`.
 - Producto de ejemplo con SKU `PROD-001`.
+
+Para producción, usar `npm run build` y `npm start` en lugar de `npm run dev`.
 
 ### 3. Levantar el frontend
 
@@ -605,7 +609,6 @@ Para usarla:
 ├── docs/screenshots/
 ├── postman/
 ├── docker-compose.yml
-├── frontend-design.md
 └── README.md
 ```
 
